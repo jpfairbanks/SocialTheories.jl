@@ -8,5 +8,7 @@ using Catlab.Doctrines
 export viz, pgfrender, tikzrender, wd
 
 include("graphics.jl")
-# include("SocialFacilitation.jl")
+include("SocialFacilitation.jl")
+include("Metacognition.jl")
+include("Missions.jl")
 end # module
