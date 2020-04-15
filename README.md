@@ -73,6 +73,8 @@ end
 viz(sfmodel)
 ```
 
+![](doc/img/sfmodel.png)
+
 Our second hypothesis says that the effect of social facilitation
 depends on the difficulty of the task. For easy tasks observers increase performance
 but for not easy tasks they decrease performance.
@@ -95,6 +97,8 @@ end
 
 viz(ttmodel)
 ```
+
+![](doc/img/ttmodel.png)
 
 We can refine the SocialFacilitation theory into the ArousalAnxietyFacilitation theory by adding some new causal processes. This refinement is given by the functor `ArousalAnxietyFacilitation => SocialFacilitation`
 
@@ -178,3 +182,5 @@ end
 
 viz(aamodel)
 ```
+
+![](doc/img/aamodel.png)
