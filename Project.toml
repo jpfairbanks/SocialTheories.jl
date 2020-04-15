@@ -1,0 +1,12 @@
+name = "SocialTheories"
+uuid = "b1d84fc2-0af5-425d-8c67-4c6c2f46ca97"
+authors = ["James Fairbanks <james.fairbanks@gtri.gatech.edu>"]
+version = "0.1.0"
+
+[deps]
+AutoHashEquals = "15f4f7f2-30c1-5605-9d31-71845cf9641f"
+Catlab = "134e5e36-593f-5add-ad60-77f754baafbe"
+Compose = "a81c6b42-2e10-5240-aca2-a61377ecd94b"
+Convex = "f65535da-76fb-5f13-bab9-19810c17039a"
+SCS = "c946c3f1-0d1f-5ce8-9dea-7daa1f7e2d13"
+TikzPictures = "37f6aa50-8035-52d0-81c2-5a1d08754b2d"
