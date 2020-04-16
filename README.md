@@ -280,7 +280,7 @@ And the comparison operation we will compute.
 
 ```julia
 d0 = substitute(hlmodel, 8, cmp)
-d1 = substitute(d1, 4, exp)
+d1 = substitute(d0, 4, exp)
 d2 = substitute(d1, 3, manip)
 
 ```
