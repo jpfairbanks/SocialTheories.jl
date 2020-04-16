@@ -85,24 +85,24 @@ end;
 # end
 #
 
-@theory Studies(AbelianBicategoryRelations) begin
-    constant(X::Ob)::(munit()→X)
-    cast(X::Ob,Y::Ob)::(X → Y)
-    ask(q::Question, Y::Ob, Z::Ob)::(Y→Z)
-    ask!(q::Question, Y::Ob, Z::Ob)::(Y→Y⊗Z)
-    # given the trajectory they followed, how many (red,green) victims did they save?
-    nsaved::(Traj → Count⊗Count)
-    time::(Traj → Time)
-
-    # given the instructions from the experimenter, make a plan for playing the game
-    plan::(Knowledge⊗Tool → Strategy)
-    # after the first mission you have memory of the strategy you used for the previous mission
-    replan::(Knowledge⊗Tool⊗Strategy → Strategy)
-
-    # execute the playing of the game given your strategy
-    play::(Strategy → Traj)
-    # ask₀ is for pre-hoc questions and ask₁ is for post-hoc questions
-
-    # ask the same question to all the participants
-    question::(munit()→ Question)
-end
+# @theory Studies(AbelianBicategoryRelations) begin
+#     constant(X::Ob)::(munit()→X)
+#     cast(X::Ob,Y::Ob)::(X → Y)
+#     ask(q::Question, Y::Ob, Z::Ob)::(Y→Z)
+#     ask!(q::Question, Y::Ob, Z::Ob)::(Y→Y⊗Z)
+#     # given the trajectory they followed, how many (red,green) victims did they save?
+#     nsaved::(Traj → Count⊗Count)
+#     time::(Traj → Time)
+#
+#     # given the instructions from the experimenter, make a plan for playing the game
+#     plan::(Knowledge⊗Tool → Strategy)
+#     # after the first mission you have memory of the strategy you used for the previous mission
+#     replan::(Knowledge⊗Tool⊗Strategy → Strategy)
+#
+#     # execute the playing of the game given your strategy
+#     play::(Strategy → Traj)
+#     # ask₀ is for pre-hoc questions and ask₁ is for post-hoc questions
+#
+#     # ask the same question to all the participants
+#     question::(munit()→ Question)
+# end
