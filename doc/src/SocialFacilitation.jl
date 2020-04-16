@@ -51,7 +51,7 @@ We include:
 Our social facilitation hypothesis can be expressed in this theory.
 """
 
-@present SocialFacilitation(FreeBiproductCategory) begin
+@present SocialFacilitation(FreeCartesianCategory) begin
     Number::Ob
     Bool::Ob
     Task::Ob
@@ -131,7 +131,7 @@ end
 
 begin
     ArousalAnxietyFacilitation = deepcopy(SocialFacilitation)
-    # gens = [Ob(FreeBiproductCategory.Ob, x) for x in [:arousal, :anxiety, :performance]]
+    # gens = [Ob(FreeCartesianCategory.Ob, x) for x in [:arousal, :anxiety, :performance]]
     b, num = generators(SocialFacilitation, [:Bool, :Number])
     gens = [
         Hom(:arousal, num, num),
@@ -148,7 +148,7 @@ begin
     add_equation!(ArousalAnxietyFacilitation, perform, rhs)
 end
 
-# @present ArousalAnxietyFacilitation(FreeBiproductCategory) begin
+# @present ArousalAnxietyFacilitation(FreeCartesianCategory) begin
 #     Number::Ob
 #     Bool::Ob
 #     Task::Ob
