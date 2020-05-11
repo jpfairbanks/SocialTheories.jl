@@ -37,7 +37,7 @@ to_hom_expr(p::Presentation, f::WiringDiagram) = to_hom_expr(moduleof(p), f)
     estimate::Hom(Observer⊗Task⊗Actions, Workload)
     estimate′::Hom(Observer⊗Task⊗BehaviorChange, Workload)
     infer::Hom(Actions⊗Observer, BehaviorChange)
-    fneirs::Hom(Workload, Stress)
+    fNIRS::Hom(Workload, Stress)
     agentperf::Hom(Stress⊗Workload, Score)
     identify::Hom(Actions⊗Observer, Task)
     agentrecognition::Hom(Task⊗Task, Score)
@@ -58,16 +58,16 @@ model = @program KnowledgeModels (wl::Workload, t::Task, obs::Observer) begin
 end
 
 # TA 3 Experiment Goal
-model = @program KnowledgeModels (c1::Component, c2::Coordinate, obs::Observer) begin
-    t = task(c1, c2)
-    wl = difficulty(t)
-    actions, perf = perform(wl, t)
-    wl_hat        = estimate(obs, t, actions)
-    t̂ = identify(actions, obs)
-    ap = agentperf(fneirs(wl), wl_hat)
-    return ap, check(t,t̂)
-end
-
+# model = @program KnowledgeModels (c1::Component, c2::Coordinate, obs::Observer) begin
+#     t = task(c1, c2)
+#     wl = difficulty(t)
+#     actions, perf = perform(wl, t)
+#     wl_hat        = estimate(obs, t, actions)
+#     t̂ = identify(actions, obs)
+#     ap = agentperf(fNIRS(wl), wl_hat)
+#     return ap, check(t,t̂)
+# end
+#
 
 # James Hypoth 1: component, coordinate cause high stress
 # James Hypoth 2: if corr(Stress, wl_hat) > 0.8 then agent is good, else agent sucks
@@ -91,7 +91,7 @@ model = @program KnowledgeModels (c1::Component, c2::Coordinate, obs::Observer) 
     actions, perf = perform(wl, t)
     wl_hat        = estimate(obs, t, actions)
     t̂ = identify(actions, obs)
-    ap = agentperf(fneirs(wl), wl_hat)
+    ap = agentperf(fNIRS(wl), wl_hat)
     return ap, agentrecognition(t,t̂)
 end
 draw(model)
@@ -103,7 +103,7 @@ model = @program KnowledgeModels (c1::Component, c2::Coordinate, obs::Observer) 
     actions, perf = perform(wl, t)
     wl_hat        = estimate(obs, t, actions)
     t̂ = identify(actions, obs)
-    ap = agentperf(fneirs(wl), wl_hat)
+    ap = agentperf(fNIRS(wl), wl_hat)
     return efficiency(actions, t, perf), effectiveness(actions, t, perf), ap, agentrecognition(t,t̂)
 end
 draw(model)
