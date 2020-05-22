@@ -51,31 +51,31 @@ We include:
 Our social facilitation hypothesis can be expressed in this theory.
 """
 
-@present SocialFacilitation(FreeCartesianCategory) begin
-    Number::Ob
-    Bool::Ob
-    Task::Ob
-
-    plus::Hom(Number⊗Number, Number)
-    diff::Hom(Number⊗Number, Number)
-    times::Hom(Number⊗Number, Number)
-    div::Hom(Number⊗Number, Number)
-
-    and::Hom(Bool⊗Bool, Bool)
-    neg::Hom(Bool, Bool)
-    eq::Hom(Number⊗Number, Bool)
-    neq::Hom(Number⊗Number, Bool)
-
-    ⊤::Hom(munit(), Bool)
-    ⊥::Hom(munit(), Bool)
-
-    t1::Hom(munit(), Task)
-    t2::Hom(munit(), Task)
-
-    observed::Hom(munit(), Bool)
-
-    perform::Hom(Task⊗Bool, Number)
-end
+# @present SocialFacilitation(FreeCartesianCategory) begin
+#     Number::Ob
+#     Bool::Ob
+#     Task::Ob
+#
+#     plus::Hom(Number⊗Number, Number)
+#     diff::Hom(Number⊗Number, Number)
+#     times::Hom(Number⊗Number, Number)
+#     div::Hom(Number⊗Number, Number)
+#
+#     and::Hom(Bool⊗Bool, Bool)
+#     neg::Hom(Bool, Bool)
+#     eq::Hom(Number⊗Number, Bool)
+#     neq::Hom(Number⊗Number, Bool)
+#
+#     ⊤::Hom(munit(), Bool)
+#     ⊥::Hom(munit(), Bool)
+#
+#     t1::Hom(munit(), Task)
+#     t2::Hom(munit(), Task)
+#
+#     observed::Hom(munit(), Bool)
+#
+#     perform::Hom(Task⊗Bool, Number)
+# end
 
 
 """ Our first hypothesis says that for any given task, a participant
@@ -202,3 +202,77 @@ viz(aamodel)
 open("model3.tex", "w") do fp
     tikzrender(fp, ArousalAnxietyFacilitation, aamodel)
 end
+
+@present HighLevel(FreeCartesianCategory) begin
+    Number::Ob
+    Bool::Ob
+    Task::Ob
+    Condition::Ob
+
+    plus::Hom(Number⊗Number, Number)
+    diff::Hom(Number⊗Number, Number)
+    times::Hom(Number⊗Number, Number)
+    div::Hom(Number⊗Number, Number)
+
+    and::Hom(Bool⊗Bool, Bool)
+    neg::Hom(Bool, Bool)
+    eq::Hom(Number⊗Number, Bool)
+    neq::Hom(Number⊗Number, Bool)
+    gt::Hom(Number⊗Number, Bool)
+    lt::Hom(Number⊗Number, Bool)
+
+    ⊤::Hom(munit(), Bool)
+    ⊥::Hom(munit(), Bool)
+
+    t1::Hom(munit(), Task)
+    t2::Hom(munit(), Task)
+
+    observed::Hom(munit(), Bool)
+
+    arousal::Hom(Bool, Number)
+    anxiety::Hom(Task, Number)
+    performance::Hom(Number⊗Number, Number)
+
+    manipulate::Hom(munit(), Condition⊗Condition⊗Condition⊗Condition)
+    experiment::Hom(Condition, Number)
+    comparison::Hom(Number⊗Number⊗Number⊗Number, Bool)
+
+    task::Hom(Condition, Task)
+    observation::Hom(Condition, Bool)
+    cond::Hom(Task⊗Bool, Condition)
+end
+
+    # experiment::Hom(s::Task, t::Task, obs::Bool, nobs::Bool)
+
+hlmodel = @program HighLevel () begin
+    conditions = manipulate()
+    data = [experiment(c) for c in conditions]
+    result = comparison(data...) # := comparison(data[1], data[2], data[3], data[4])
+    return result
+end
+
+viz(hlmodel)
+
+
+exp = @program HighLevel (c::Condition) begin
+    t, o = task(c), observation(c)
+    return performance(arousal(o), anxiety(t))
+end
+
+manip = @program HighLevel () begin
+    c11 = cond(t1(), observed())
+    c21 = cond(t2(), observed())
+    c12 = cond(t1(), neg(observed()))
+    c22 = cond(t2(), neg(observed()))
+    return c11, c12, c21, c22
+end
+
+viz(manip)
+
+cmp = @program HighLevel (a::Number, b::Number, c::Number, d::Number) begin
+    return and(gt(a,b), lt(c,d))
+end
+
+d0 = substitute(hlmodel, 8, cmp)
+d1 = substitute(d0, 4, exp)
+d2 = substitute(d1, 3, manip)
