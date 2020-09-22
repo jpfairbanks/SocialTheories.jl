@@ -1,6 +1,6 @@
 using SocialTheories
 using Catlab
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.Syntax
 
 
@@ -57,7 +57,6 @@ using Catlab.Syntax
 
 end
 
-Sat = deepcopy(Satisficing)
-
-f,g,h, sat, dt = generators(Sat, [:aspirations, :timepressure, :popST, :satisficing, :difftriage])
-add_definition!(Sat, :sat, (f⊗g⊗h)⋅sat⋅dt)
+@present Sat <: Satisficing begin
+    sat := compose(otimes(aspirations, timepressure, popST), satisficing, difftriage)
+end

@@ -28,24 +28,6 @@ end
 # identity everywhere else
 # any model of SocialFacilitation is a model of ArousalAnxietyFacilitation
 
-begin
-    ArousalAnxietyFacilitation = deepcopy(SocialFacilitation)
-    b, num = generators(SocialFacilitation, [:Bool, :Number])
-    gens = [
-        Hom(:arousal, num, num),
-        Hom(:anxiety, num, num),
-        Hom(:performance, num⊗num, num),
-        Hom(:gt, num⊗num, b),
-        Hom(:lt, num⊗num, b)
-    ]
-    map(g->add_generator!(ArousalAnxietyFacilitation, g), gens)
-
-    arousal, anxiety, performance = gens
-    rhs = (arousal⊗anxiety)⋅performance
-    perform = generator(SocialFacilitation, :perform)
-    add_equation!(ArousalAnxietyFacilitation, perform, rhs)
-end
-
 aamodel = @program ArousalAnxietyFacilitation () begin
     a = observed()
     ua = neg(a)

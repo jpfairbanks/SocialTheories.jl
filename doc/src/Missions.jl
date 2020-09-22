@@ -1,6 +1,6 @@
 using SocialTheories
 using Catlab
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.Syntax
 
 using Catlab.Graphics

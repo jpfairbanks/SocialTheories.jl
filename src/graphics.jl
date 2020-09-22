@@ -1,11 +1,12 @@
 using Catlab
 
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.Syntax
 
 using Convex, SCS, TikzPictures
 using Compose: draw, PGF
 using Catlab.Graphics
+using Catlab.Graphics.Graphviz
 using Catlab.Graphics.ComposeWiringDiagrams
 
 using Catlab.WiringDiagrams
@@ -13,9 +14,17 @@ import Catlab.WiringDiagrams: to_hom_expr
 
 wd(x) = to_wiring_diagram(x)
 #display(x) = to_composejl(add_junctions!(wd(x)), direction=:horizontal, labels=true)
-viz(x::WiringDiagram) = to_graphviz(add_junctions(x), orientation=LeftToRight, labels=true)
+viz(x::WiringDiagram) = to_graphviz(add_junctions(x),
+                                    orientation=LeftToRight,
+                                    labels=true,
+                                    graph_attrs = Dict(:bgcolor=>"transparent"))
 viz(x) = draw(to_wiring_diagram(x))
-
+save_wd(ex, fname::AbstractString) = begin
+    g = viz(ex)
+    open(fname, "w") do io
+        run_graphviz(io, g, format="svg")
+    end
+end
 #compile_expr(f, name=:acc_train, args=[:query], arg_types=[:Query])
 moduleof(p::Presentation) = typeof(first(generators(p))).name.module
 to_hom_expr(p::Presentation, f::WiringDiagram) = to_hom_expr(moduleof(p), f)
