@@ -1,7 +1,8 @@
 using SocialTheories
+import SocialTheories: save_wd
 using Catlab
 
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.Syntax
 
 using Convex, SCS, TikzPictures
@@ -20,6 +21,7 @@ to_hom_expr(p::Presentation, f::WiringDiagram) = to_hom_expr(moduleof(p), f)
 
 using AutoHashEquals
 
+mkpath("socialfacilitation")
 
 # mcopy(A::Ports{SymmetricMonoidalCategory.Hom}, n::Int) = junctioned_mcopy(A, n)
 
@@ -91,6 +93,7 @@ sfmodel = @program SocialFacilitation (task::Task) begin
 end
 
 viz(sfmodel)
+save_wd(sfmodel, "socialfacilitation/sfmodel.svg")
 
 open("model1.tex", "w") do fp
     SocialTheories.tikzrender(fp, SocialFacilitation, sfmodel)
@@ -117,67 +120,30 @@ ttmodel = @program SocialFacilitation () begin
 end
 
 viz(ttmodel)
+save_wd(ttmodel, "socialfacilitation/ttmodel.svg")
 
 open("model2.tex", "w") do fp
     tikzrender(fp, SocialFacilitation, ttmodel)
 end
 
-# Refinement Functor ArousalAnxietyFacilitation => SocialFacilitation
-# (arousal⊗anxiety)⋅performance ↦ perform,
-# < ↦ !=
-# > ↦ !=
-# identity everywhere else
-# any model of SocialFacilitation is a model of ArousalAnxietyFacilitation
+#=
+Refinement Functor ArousalAnxietyFacilitation => SocialFacilitation
+ (arousal⊗anxiety)⋅performance ↦ perform,
+ < ↦ !=
+ > ↦ !=
+ identity everywhere else
+ any model of SocialFacilitation is a model of ArousalAnxietyFacilitation
 
-begin
-    ArousalAnxietyFacilitation = deepcopy(SocialFacilitation)
-    # gens = [Ob(FreeCartesianCategory.Ob, x) for x in [:arousal, :anxiety, :performance]]
-    b, num = generators(SocialFacilitation, [:Bool, :Number])
-    gens = [
-        Hom(:arousal, num, num),
-        Hom(:anxiety, num, num),
-        Hom(:performance, num⊗num, num),
-        Hom(:gt, num⊗num, b),
-        Hom(:lt, num⊗num, b)
-    ]
-    map(g->add_generator!(ArousalAnxietyFacilitation, g), gens)
+    @present ArousalAnxietyFacilitation <: SocialFacilitation begin
+        arousal::Hom(Number, Number)
+        anxiety::Hom(Number, Number)
+        performance::Hom(Number⊗Number, Number)
+        gt::Hom(Number⊗Number, Bool)
+        lt::Hom(Number⊗Number, Bool)
 
-    arousal, anxiety, performance = gens
-    rhs = (arousal⊗anxiety)⋅performance
-    perform = generator(SocialFacilitation, :perform)
-    add_equation!(ArousalAnxietyFacilitation, perform, rhs)
-end
-
-# @present ArousalAnxietyFacilitation(FreeCartesianCategory) begin
-#     Number::Ob
-#     Bool::Ob
-#     Task::Ob
-#
-#     plus::Hom(Number⊗Number, Number)
-#     diff::Hom(Number⊗Number, Number)
-#     times::Hom(Number⊗Number, Number)
-#     div::Hom(Number⊗Number, Number)
-#
-#     and::Hom(Bool⊗Bool, Bool)
-#     neg::Hom(Bool, Bool)
-#     eq::Hom(Number⊗Number, Bool)
-#     neq::Hom(Number⊗Number, Bool)
-#     gt::Hom(Number⊗Number, Bool)
-#     lt::Hom(Number⊗Number, Bool)
-#
-#     ⊤::Hom(munit(), Bool)
-#     ⊥::Hom(munit(), Bool)
-#
-#     t1::Hom(munit(), Task)
-#     t2::Hom(munit(), Task)
-#
-#     observed::Hom(munit(), Bool)
-#
-#     arousal::Hom(Bool, Number)
-#     anxiety::Hom(Task, Number)
-#     performance::Hom(Number⊗Number, Number)
-# end
-
+        perform == (arousal⊗anxiety)⋅performance
+    end
+=#
 
 """ Our second hypothesis says that the effect of social facilitation
 depends on the difficulty of the task. For easy tasks observers increase performance
@@ -199,9 +165,10 @@ aamodel = @program ArousalAnxietyFacilitation () begin
 end
 
 viz(aamodel)
-open("model3.tex", "w") do fp
-    tikzrender(fp, ArousalAnxietyFacilitation, aamodel)
-end
+save_wd(aamodel, "socialfacilitation/aamodel.svg")
+# open("model3.tex", "w") do fp
+#     tikzrender(fp, ArousalAnxietyFacilitation, aamodel)
+# end
 
 @present HighLevel(FreeCartesianCategory) begin
     Number::Ob
@@ -252,12 +219,15 @@ hlmodel = @program HighLevel () begin
 end
 
 viz(hlmodel)
+save_wd(hlmodel, "socialfacilitation/hlmodel.svg")
 
 
 exp = @program HighLevel (c::Condition) begin
     t, o = task(c), observation(c)
     return performance(arousal(o), anxiety(t))
 end
+
+viz(exp)
 
 manip = @program HighLevel () begin
     c11 = cond(t1(), observed())
@@ -268,6 +238,7 @@ manip = @program HighLevel () begin
 end
 
 viz(manip)
+save_wd(manip, "socialfacilitation/manip.svg")
 
 cmp = @program HighLevel (a::Number, b::Number, c::Number, d::Number) begin
     return and(gt(a,b), lt(c,d))
@@ -276,3 +247,29 @@ end
 d0 = substitute(hlmodel, 8, cmp)
 d1 = substitute(d0, 4, exp)
 d2 = substitute(d1, 3, manip)
+
+viz(d2)
+save_wd(d2, "socialfacilitation/d2.svg")
+
+manip′ = @program HighLevel () begin
+    c11 = (t1(), observed())
+    c21 = (t2(), observed())
+    c12 = (t1(), neg(observed()))
+    c22 = (t2(), neg(observed()))
+    return c11, c12, c21, c22
+end
+
+viz(manip′)
+save_wd(manip′, "socialfacilitation/manipprime.svg")
+
+exp = @program HighLevel (obs::Bool, t::Task) begin
+    return performance(arousal(obs), anxiety(t))
+end
+
+viz(exp)
+save_wd(exp, "socialfacilitation/exp.svg")
+
+viz(cmp)
+save_wd(cmp, "socialfacilitation/cmp.svg")
+
+# compose(manip′, otimes(exp, exp, exp, exp), cmp)

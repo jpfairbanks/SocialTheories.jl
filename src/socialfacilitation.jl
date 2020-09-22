@@ -1,7 +1,7 @@
 using SocialTheories
 using Catlab
 
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.Syntax
 
 using Convex, SCS, TikzPictures
@@ -80,21 +80,12 @@ end
 # identity everywhere else
 # any model of SocialFacilitation is a model of ArousalAnxietyFacilitation
 
-begin
-    ArousalAnxietyFacilitation = deepcopy(SocialFacilitation)
-    # gens = [Ob(FreeBiproductCategory.Ob, x) for x in [:arousal, :anxiety, :performance]]
-    b, num = generators(SocialFacilitation, [:Bool, :Number])
-    gens = [
-        Hom(:arousal, num, num),
-        Hom(:anxiety, num, num),
-        Hom(:performance, num⊗num, num),
-        Hom(:gt, num⊗num, b),
-        Hom(:lt, num⊗num, b)
-    ]
-    map(g->add_generator!(ArousalAnxietyFacilitation, g), gens)
+@present ArousalAnxietyFacilitation <: SocialFacilitation begin
+    arousal::Hom(Number, Number)
+    anxiety::Hom(Number, Number)
+    performance::Hom(Number⊗Number, Number)
+    gt::Hom(Number⊗Number, Bool)
+    lt::Hom(Number⊗Number, Bool)
 
-    arousal, anxiety, performance = gens
-    rhs = (arousal⊗anxiety)⋅performance
-    perform = generator(SocialFacilitation, :perform)
-    add_equation!(ArousalAnxietyFacilitation, perform, rhs)
+    perform == (arousal⊗anxiety)⋅performance
 end

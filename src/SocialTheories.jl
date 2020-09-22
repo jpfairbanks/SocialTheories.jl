@@ -3,7 +3,7 @@ module SocialTheories
 greet() = print("Hello ASIST World!")
 
 using Catlab
-using Catlab.Doctrines
+using Catlab.Theories
 
 export viz, pgfrender, tikzrender, wd, SocialFacilitation, ArousalAnxietyFacilitation, Studies, Satisficing, Sat
 

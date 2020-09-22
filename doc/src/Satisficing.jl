@@ -1,7 +1,7 @@
 using SocialTheories
 using Catlab
 
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.Syntax
 
 using Convex, SCS, TikzPictures
@@ -251,11 +251,9 @@ end
 
 # this is really verbose, the power of algebra is that you can define new terms
 # from old terms to make your formulas more terse.
-
-Sat = deepcopy(Satisficing)
-
-f,g,h, sat, dt = generators(Sat, [:aspirations, :timepressure, :popST, :satisficing, :difftriage])
-add_definition!(Sat, :sat, (f⊗g⊗h)⋅sat⋅dt)
+@present Sat <: Satisficing begin
+    sat := compose(otimes(aspirations, timepressure, popST), satisficing, difftriage)
+end
 
 hypothₐ = @program Sat (g::Goal, m::Mission) begin
     return sat(g,m)
@@ -288,3 +286,69 @@ hypoth⁺ₐ = @program Sat () begin
     and(and(lt(s11, s21), lt(s12, s22)),
         and(gt(s11, s12), gt(s21, s22)))
 end
+
+@present Satisficing(FreeCartesianCategory) begin
+    # variable types
+    Number::Ob
+    Bool::Ob
+    Choice::Ob
+    Training::Ob
+    Mission::Ob
+    RoomStats::Ob
+    Time::Ob
+
+    # arithmetic operators
+    plus::Hom(Number⊗Number, Number)
+    diff::Hom(Number⊗Number, Number)
+    times::Hom(Number⊗Number, Number)
+    div::Hom(Number⊗Number, Number)
+
+    # logical operators
+    and::Hom(Bool⊗Bool, Bool)
+    neg::Hom(Bool, Bool)
+    eq::Hom(Number⊗Number, Bool)
+    neq::Hom(Number⊗Number, Bool)
+    gt::Hom(Number⊗Number, Bool)
+    lt::Hom(Number⊗Number, Bool)
+
+    # constants
+    ⊤::Hom(munit(), Bool)
+    ⊥::Hom(munit(), Bool)
+
+    highST::Hom(munit(), Number)
+    lowST::Hom(munit(), Number)
+    popST::Hom(munit(), Number)
+    popExp::Hom(munit(), Number)
+    popRoomStats::Hom(munit(), RoomStats)
+    popProxRoom::Hom(munit(), Number)
+    popProxVict::Hom(munit(), Number)
+    popTime::Hom(munit(), Time)
+
+    univariate::Hom(munit(), Number)
+
+    # experimental conditions
+    baseline::Hom(munit(), Training)
+    tradeoff::Hom(munit(), Training)
+    canine::Hom(munit(),   Training)
+
+    simplemission::Hom(munit(), Mission)
+    complxmission::Hom(munit(), Mission)
+
+    # causal mechanisms
+    timepressure::Hom(Mission, Number)
+    roomyellow::Hom(Training⊗Number⊗Number⊗Number, Bool)
+    victimyellow::Hom(Number⊗Number⊗Bool⊗Number⊗RoomStats⊗Time, Bool)
+end
+
+roomhyp = @program Satisficing (t::Training) begin
+    return roomyellow(t, popST(), popExp(), popProxRoom())
+end
+
+to_graphviz(roomhyp, orientation=LeftToRight, labels=true)
+
+vichyp = @program Satisficing (m::Mission, yellowvic::Bool) begin
+    pressure = timepressure(m)
+    return victimyellow(pressure, popST(), yellowvic, popExp(), popRoomStats(), popTime())
+end
+
+to_graphviz(vichyp, orientation=LeftToRight, labels=true)

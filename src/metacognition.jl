@@ -1,7 +1,7 @@
 using Catlab
 
 using Catlab
-using Catlab.Doctrines
+using Catlab.Theories
 using Catlab.Syntax
 using Catlab.Graphics
 using Catlab.Graphics.ComposeWiringDiagrams
