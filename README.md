@@ -295,3 +295,46 @@ Describing the experiment:
 
 Specifying the manipulations:
 ![](doc/img/hlhyp3.png)
+
+# Functorial Semantics
+
+Once you have built a description of your process, you can assign semantics to the process in the category 
+of Markov Kernels which are also known as Conditional Probability Distributions (CPDs). This is done with the `oapply` function.
+
+If `d` is a wiring diagram, and `dists` is a `Dict{Symbol, Function}` that maps the names of each primitive process in your wiring diagram to a function that draws samples from the CPD, `oapply(d,dists)` will sample from the composite process.
+
+Returning to the aamodel we would sample from this distribution as shown below: 
+![](doc/img/aamodel.png)
+
+```julia
+# mean arousal condition 1
+μ₁ = 3
+# mean arousal condition 2
+μ₂ = -1
+
+# mean anxiety condition 1
+ν₁ = 1
+# mean anxiety condition 2
+ν₂ = 2
+
+# linear effects coefficients for performance ~ N(β₁x + β₂y + β₃xy, 1)
+β₁ = 1
+β₂ = 1
+β₃ = -5
+
+sampler = oapply(aamodel, Dict(
+    :neg => x-> x[1] == 1 ? 0.0 : 1.0,
+    :gt  => x-> x[1]  >  x[2] ? 1.0 : 0.0,
+    :lt  => x-> x[1]  <= x[2] ? 1.0 : 0.0,
+    :and => x-> x[1] &&  x[2] ? 1.0 : 0.0,
+    :t1 => x->1
+    :t2 => x->2
+    :observed => x->Float64(rand(Bool)),
+    :arousal  => x-> (x == 1 ? μ₁ : μ₂) + randn(),
+    :anxiety  => x-> (x == 1 ? ν₁ : ν₂) + randn()
+    :performance => x-> (β₁*x[1] + β₂*x[2] + β₃*x[3]) + randn()
+))
+
+# draw ten samples
+[sampler([]) for i in 1:10]
+```

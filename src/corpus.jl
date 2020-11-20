@@ -16,6 +16,17 @@ export add_results!, add_types!, add_causes!, add_constructs!, add_effects!, add
 
 Table(db::SQLite.DB, q::String) = Table(DBInterface.execute(db, q))
 
+function SocialTheory(db::SQLite.DB)
+    th = SocialTheory{String}()
+    add_results!(th, db)
+    add_types!(th, db)
+    add_constructs!(th,db)
+    add_vars!(th, db)
+    add_causes!(th, db)
+    add_effects!(th, db)
+    return th
+end;
+
 function add_results!(th, db)
     t = Table(db, "select * from CiteIt_result")
     add_parts!(th, :Result, length(t), rname=t.name)
